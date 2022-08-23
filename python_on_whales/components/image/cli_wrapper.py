@@ -215,6 +215,7 @@ class ImageCLI(DockerCLICaller):
         pull: bool = False,
         tags: Union[str, List[str]] = [],
         target: Optional[str] = None,
+        progress: bool = False,
     ) -> python_on_whales.components.image.cli_wrapper.Image:
         """Build a Docker image with the old Docker builder (meaning not using buildx/buildkit)
 
@@ -253,7 +254,9 @@ class ImageCLI(DockerCLICaller):
         # to make it easier to write and read tests, the tests of this function
         # are also grouped with the tests of "docker.build()".
         tags = to_list(tags)
-        full_cmd = self.docker_cmd + ["build", "--quiet"]
+        full_cmd = self.docker_cmd + ["build"]
+        if not progress:
+            full_cmd += ["--quiet"]
 
         full_cmd.add_args_list(
             "--add-host", format_dict_for_cli(add_hosts, separator=":")
@@ -271,8 +274,19 @@ class ImageCLI(DockerCLICaller):
             self.client_config
         )
         full_cmd.append(context_path)
-        image_id = run(full_cmd).strip()
-        return docker_image.inspect(image_id)
+        if not progress:
+            image_id = run(full_cmd).strip()
+            return docker_image.inspect(image_id)
+        else:
+            for (source, line) in stream_stdout_and_stderr(full_cmd):
+                try:
+                    print(source, line.decode().rstrip())
+                except UnicodeDecodeError:
+                    print(source, str(line))
+                if "Successfully built" in line:
+                    image_id = line.split(" ")[-1]
+                return docker_image.inspect(image_id)
+
 
     def history(self):
         """Not yet implemented"""
