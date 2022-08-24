@@ -257,6 +257,10 @@ class ImageCLI(DockerCLICaller):
         full_cmd = self.docker_cmd + ["build"]
         if not progress:
             full_cmd += ["--quiet"]
+        else:
+            if full_cmd[0] == "podman":
+                warnings.warn("podman build may be broken when progress is enabled")
+                # see details at https://github.com/gabrieldemarmiesse/python-on-whales/pull/351
 
         full_cmd.add_args_list(
             "--add-host", format_dict_for_cli(add_hosts, separator=":")
