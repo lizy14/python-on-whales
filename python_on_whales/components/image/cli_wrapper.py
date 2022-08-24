@@ -258,7 +258,7 @@ class ImageCLI(DockerCLICaller):
         if not progress:
             full_cmd += ["--quiet"]
         else:
-            if 'podman' in full_cmd[0]:
+            if 'podman' in str(full_cmd[0]):
                 warnings.warn("podman build may be broken when progress is enabled")
                 # see details at https://github.com/gabrieldemarmiesse/python-on-whales/pull/351
 
