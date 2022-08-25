@@ -282,12 +282,12 @@ class ImageCLI(DockerCLICaller):
             image_id = run(full_cmd).strip()
             return docker_image.inspect(image_id)
         else:
-            for (source, line) in stream_stdout_and_stderr(full_cmd):
+            for (_, line) in stream_stdout_and_stderr(full_cmd):
                 try:
                     line = line.decode().rstrip()
                 except UnicodeDecodeError:
                     line = str(line)
-                print(source, line)
+                print(line)
                 if "Successfully built" in line:
                     image_id = line.split(" ")[-1]
                     return docker_image.inspect(image_id)
