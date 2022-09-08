@@ -216,6 +216,7 @@ class ImageCLI(DockerCLICaller):
         tags: Union[str, List[str]] = [],
         target: Optional[str] = None,
         progress: bool = False,
+        isolation: Optional[str] = None,
     ) -> python_on_whales.components.image.cli_wrapper.Image:
         """Build a Docker image with the old Docker builder (meaning not using buildx/buildkit)
 
@@ -273,6 +274,7 @@ class ImageCLI(DockerCLICaller):
         full_cmd.add_simple_arg("--network", network)
         full_cmd.add_flag("--no-cache", not cache)
         full_cmd.add_args_list("--tag", tags)
+        full_cmd.add_simple_arg("--isolation", isolation)
 
         docker_image = python_on_whales.components.image.cli_wrapper.ImageCLI(
             self.client_config
