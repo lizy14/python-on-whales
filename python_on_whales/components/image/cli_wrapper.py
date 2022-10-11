@@ -292,7 +292,7 @@ class ImageCLI(DockerCLICaller):
                 print(line)
                 if "Successfully built" in line:
                     image_id = line.split(" ")[-1]
-                    return docker_image.inspect(image_id)
+            return docker_image.inspect(image_id)
 
 
     def history(self):
